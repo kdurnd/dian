@@ -14,7 +14,7 @@ int main(int argc,char* argv[])
 				printf("dian-player v1.1\n");
 				break;
 			case 'h':
-				printf("-v 输出版本信息\n");
+				printf("player [-v]\n");
 				break;
 			case '?':
 				printf("error optopt: %c\n", optopt);
