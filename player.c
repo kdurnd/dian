@@ -2,6 +2,7 @@
 #include<getopt.h>
 #include<string.h>
 #include<stdlib.h>
+#include"video_decoder.h"
 static char *shortopts = "vht:";
 int long_index;
 static struct option long_options[] = 
