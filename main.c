@@ -11,7 +11,12 @@ static struct option long_options[] =
 };
 int main(int argc,char* argv[])
 {
-	int o, in = 1;
+	char buff[16384];
+	memset(buff, '\0', sizeof(buff));
+	fprintf(stdout, "启用全缓冲\n");
+	setvbuf(stdout, buff, _IOFBF, sizeof(buff));
+	sleep(2);
+	int o, in = 1, need_resize = 0, window, step;
 	while((o=getopt_long(argc,argv,shortopts,long_options,&long_index))!=-1)
 	{
 		switch(o)
@@ -20,17 +25,31 @@ int main(int argc,char* argv[])
 				printf("dian-player v1.1\n");
 				break;
 			case 'h':
-				printf("usage: player [--color][-c][-f <filename>] [--version][-v][--help][-h]");
+				printf("usage: player [--color][-c][-f <filename>] [--version][-v][--help][-h]\n"
+						"[--resize <window> <step>]");
 				break;
 			case 'c':
 				assert(!in);
-				Color();
-				break;
-			/*case 'r':
+				do
+				{
+					if (need_resize)
+						resize(window, step);
+					Color();
+					sleep(0.042);
+					system("clear");
+				}while(getf());
+				return 0;
+			case 'r':
 				assert(!in);
-				if(optind==argc || atoi(argv[optind-1]) || atoi(argv[optind]))
-				resize(atoi(argv[optind-1]), atoi(argv[optind]));
-				break;*/
+				need_resize = 1;
+				if(optind==argc || !atoi(argv[optind-1]) || !atoi(argv[optind]))
+				{
+					printf("resize failed\n");
+					return 0;
+				}
+				window = atoi(argv[optind-1]);
+			        step = atoi(argv[optind]);
+				break;
 			case 'f':
 				in = init(optarg);
 				break;
@@ -41,6 +60,14 @@ int main(int argc,char* argv[])
 		}
 	}
 	assert(!in);
-	Gray();
+	do
+	{
+		if (need_resize)
+			resize(window, step); 
+		Gray();
+		sleep(0.042);
+		system("clear");
+		
+	}while(getf());
 	return 0;
 }
