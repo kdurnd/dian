@@ -4,11 +4,47 @@
 int width,height;
 IMAGE image[row+5][col+5];
 IMAGE sumimage[row+5][col+5];
+Frame f;
+
+int end()
+{
+	if(f.width == 0 && f.height == 0 && f.linesize == 0 && f.data == NULL)
+		return 1;
+	else return 0;
+}
+
+void changemode(int dir)
+{
+  static struct termios oldt, newt;
+ 
+  if ( dir == 1 )
+  {
+    tcgetattr( STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+  }
+  else
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
+}
+
+int kbhit (void)
+{
+  struct timeval tv;
+  fd_set rdfs;
+  tv.tv_sec = 0;
+  tv.tv_usec = 0;
+  FD_ZERO(&rdfs);
+  FD_SET (STDIN_FILENO, &rdfs);
+  select(STDIN_FILENO+1, &rdfs, NULL, NULL, &tv);
+  return FD_ISSET(STDIN_FILENO, &rdfs);
+}
+
 int init(char* filename)
 {
 	int success = decoder_init(filename);
 	assert(!success);
-	Frame f = decoder_get_frame();
+	f = decoder_get_frame();
 	width = f.width;
 	height = f.height;
 	int index = 0; 
@@ -38,7 +74,7 @@ int init(char* filename)
 }
 int getf()
 {
-	Frame f = decoder_get_frame();
+	f = decoder_get_frame();
         width = f.width;
         height = f.height;
         int index = 0;

@@ -13,10 +13,8 @@ int main(int argc,char* argv[])
 {
 	char buff[16384];
 	memset(buff, '\0', sizeof(buff));
-	fprintf(stdout, "启用全缓冲\n");
 	setvbuf(stdout, buff, _IOFBF, sizeof(buff));
-	sleep(2);
-	int o, in = 1, need_resize = 0, window, step;
+	int o, in = 1, need_resize = 0,need_color = 0, window, step;
 	while((o=getopt_long(argc,argv,shortopts,long_options,&long_index))!=-1)
 	{
 		switch(o)
@@ -29,16 +27,8 @@ int main(int argc,char* argv[])
 						"[--resize <window> <step>]");
 				break;
 			case 'c':
-				assert(!in);
-				do
-				{
-					if (need_resize)
-						resize(window, step);
-					Color();
-					sleep(0.042);
-					system("clear");
-				}while(getf());
-				return 0;
+				need_color = 1;
+				break;
 			case 'r':
 				assert(!in);
 				need_resize = 1;
@@ -60,14 +50,37 @@ int main(int argc,char* argv[])
 		}
 	}
 	assert(!in);
+	changemode(1);
 	do
 	{
-		if (need_resize)
-			resize(window, step); 
-		Gray();
-		sleep(0.042);
+		int nosleep = 0;
+		if(kbhit())
+		{
+			char ch = getchar();
+			fflush(stdin);
+			if (ch == ' ')
+			{
+				while(1)
+				{
+					usleep(1000);
+					if(kbhit() && getchar()==' ')
+						break;
+				}
+			}
+			else if (ch == 'd' || ch == 'D')
+				nosleep = 1;
+		}
 		system("clear");
-		
-	}while(getf());
+		if (need_resize)
+			resize(window, step);
+	       	if(need_color)
+			Color();
+		else
+			Gray();
+		if (!nosleep)
+			usleep(42000);
+		getf();
+	}while(!end());
+	changemode(0);
 	return 0;
 }

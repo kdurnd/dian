@@ -7,6 +7,9 @@
 #include<assert.h>
 #include<string.h>
 #include<unistd.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <termios.h>
 typedef struct _IMAGE
 {
 	int r,g,b,gray;
@@ -16,8 +19,8 @@ void Color();
 void Gray();
 void resize(int w,int h);
 int getf();
-
-
-
+int kbhit();
+void changemode(int dir);
+int end();
 
 #endif
