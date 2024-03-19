@@ -82,5 +82,6 @@ int main(int argc,char* argv[])
 		getf();
 	}while(!end());
 	changemode(0);
+	decoder_close();
 	return 0;
 }
